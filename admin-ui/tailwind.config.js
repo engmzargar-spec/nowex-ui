@@ -10,20 +10,15 @@ module.exports = {
     extend: {
       colors: {
         nowex: {
-          gold: "#FFD700",   // Gold Edition
-          black: "#0A0A0A",  // Black Premium
-          glow: "#E0FFE0",   // Glow Edition
-          minimal: "#F5F5F5" // Minimal Edition
+          gold: "#FFD700",
+          black: "#0A0A0A",
+          glow: "#E0FFE0",
+          minimal: "#F5F5F5",
         },
       },
       fontFamily: {
-        inter: ["var(--font-inter)", "sans-serif"],
-        poppins: ["var(--font-poppins)", "sans-serif"],
-        roboto: ["var(--font-roboto)", "sans-serif"],
-        iransans: ["var(--font-iransans)", "sans-serif"],
-        vazir: ["var(--font-vazir)", "sans-serif"],
-        sahel: ["var(--font-sahel)", "sans-serif"],
-        shabnam: ["var(--font-shabnam)", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+        vazir: ["Vazir", "sans-serif"],
       },
     },
   },
