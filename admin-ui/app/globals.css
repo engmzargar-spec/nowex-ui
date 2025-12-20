@@ -1,0 +1,100 @@
+/* Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* فونت‌های سفارشی */
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* تنظیمات پایه برای کل پروژه */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0A0A0A; /* Black Premium */
+  color: #F5F5F5;            /* Minimal Edition */
+}
+
+/* متغیرهای فونت */
+:root {
+  --font-inter: "Inter", sans-serif;
+  --font-vazir: "Vazir", sans-serif;
+}
+
+/* پیش‌فرض: انگلیسی */
+body {
+  font-family: var(--font-inter);
+}
+
+/* فارسی */
+[lang="fa"] body {
+  font-family: var(--font-vazir);
+}
+
+/* راست‌چین کردن متن‌های فارسی */
+[lang="fa"] {
+  direction: rtl;
+  text-align: right;
+}
+
+/* کلاس‌های کمکی برای انتخاب صریح فونت */
+.font-inter {
+  font-family: var(--font-inter);
+}
+.font-vazir {
+  font-family: var(--font-vazir);
+}
+/* در آینده می‌توانی فونت‌های زبان‌های دیگر را هم اضافه کنی */
+.font-arabic {
+  font-family: "SomeArabicFont", sans-serif;
+}
+.font-japanese {
+  font-family: "SomeJapaneseFont", sans-serif;
+}
+
+/* دکمه‌ها و عناصر تعاملی */
+button {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+/* رنگ‌های برند NOWEX */
+.bg-nowex-gold {
+  background-color: #FFD700;
+}
+.text-nowex-gold {
+  color: #FFD700;
+}
+
+.bg-nowex-black {
+  background-color: #0A0A0A;
+}
+.text-nowex-black {
+  color: #0A0A0A;
+}
+
+.bg-nowex-glow {
+  background-color: #E0FFE0;
+}
+.text-nowex-glow {
+  color: #E0FFE0;
+}
+
+.bg-nowex-minimal {
+  background-color: #F5F5F5;
+}
+.text-nowex-minimal {
+  color: #F5F5F5;
+}
