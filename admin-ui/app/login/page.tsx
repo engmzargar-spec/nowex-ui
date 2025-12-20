@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Input, Button, Card, CardHeader, CardBody } from "@nextui-org/react";
 import Image from "next/image";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -29,15 +28,37 @@ export default function LoginPage() {
       {/* آیکون تغییر تم */}
       <div className="absolute top-4 left-4 cursor-pointer z-10">
         {isDark ? (
-          <SunIcon
+          // ☀️ خورشید
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
             className="w-6 h-6 text-nowex-gold"
+            viewBox="0 0 24 24"
+            fill="currentColor"
             onClick={() => setIsDark(false)}
-          />
+          >
+            <circle cx="12" cy="12" r="5" />
+            <g stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="1" x2="12" y2="4" />
+              <line x1="12" y1="20" x2="12" y2="23" />
+              <line x1="1" y1="12" x2="4" y2="12" />
+              <line x1="20" y1="12" x2="23" y2="12" />
+              <line x1="4.2" y1="4.2" x2="6.3" y2="6.3" />
+              <line x1="17.7" y1="17.7" x2="19.8" y2="19.8" />
+              <line x1="4.2" y1="19.8" x2="6.3" y2="17.7" />
+              <line x1="17.7" y1="6.3" x2="19.8" y2="4.2" />
+            </g>
+          </svg>
         ) : (
-          <MoonIcon
+          // 🌙 ماه
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
             className="w-6 h-6 text-purple-600"
+            viewBox="0 0 24 24"
+            fill="currentColor"
             onClick={() => setIsDark(true)}
-          />
+          >
+            <path d="M21 12.79A9 9 0 0 1 11.21 3 7 7 0 1 0 21 12.79z" />
+          </svg>
         )}
       </div>
 
