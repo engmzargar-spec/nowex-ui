@@ -1,6 +1,7 @@
-const { nextui } = require("@nextui-org/react");
+import { nextui } from "@nextui-org/react";
 
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+const config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
@@ -10,10 +11,10 @@ module.exports = {
     extend: {
       colors: {
         nowex: {
-          gold: "#FFD700",
-          black: "#0A0A0A",
-          glow: "#E0FFE0",
-          minimal: "#F5F5F5",
+          gold: "#FFD700",   // Gold Edition
+          black: "#0A0A0A",  // Black Premium
+          glow: "#E0FFE0",   // Glow Edition
+          minimal: "#F5F5F5" // Minimal Edition
         },
       },
       fontFamily: {
@@ -24,3 +25,5 @@ module.exports = {
   },
   plugins: [nextui()],
 };
+
+export default config;
