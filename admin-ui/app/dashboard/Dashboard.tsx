@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { dashboardConfig } from "../config/dashboardConfig";
 
@@ -33,7 +34,7 @@ export default function Dashboard() {
     async function load() {
       setLoading(true);
       try {
-        // 👇 داده‌ی تستی (فعلاً تا اتصال واقعی به بک‌اند)
+        // داده‌ی تستی (فعلاً تا اتصال واقعی به بک‌اند)
         const fakeData = {
           account: {
             initialBalance: 100000000,
@@ -68,7 +69,7 @@ export default function Dashboard() {
         const result = computeDashboard(fakeData);
         if (mounted) setComputed(result);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     }
     load();
@@ -78,15 +79,21 @@ export default function Dashboard() {
   }, [range]);
 
   return (
-    <div className="p-4">
-      {/* 👇 کنترل بازه زمانی */}
+    <div className="p-2 sm:p-4 md:p-6">
+      {/* کنترل بازه زمانی */}
       <div className="mb-4">
         <TimeRangeSelector onChange={setRange} />
       </div>
 
-      {/* 👇 شبکه کارت‌ها */}
+      {/* شبکه کارت‌ها */}
       <div
-        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+        className="
+          grid grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+          xl:grid-cols-4
+          gap-4
+        "
         style={{ gap: card.gap }}
       >
         {computed ? (
@@ -111,7 +118,7 @@ export default function Dashboard() {
             <SymbolsPieCard byCount={computed.symbolsPie.byCount} />
           </>
         ) : (
-          <div className="col-span-full text-center text-gray-500">
+          <div className="col-span-full text-center text-gray-500 text-sm md:text-base">
             {loading ? "در حال بارگذاری..." : "داده‌ای یافت نشد"}
           </div>
         )}

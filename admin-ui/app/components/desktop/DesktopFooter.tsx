@@ -1,0 +1,23 @@
+"use client";
+
+import { palette } from "../../theme/palette";
+
+export default function DesktopFooter() {
+  return (
+    <footer
+      className="flex flex-row items-center justify-between px-6 py-3 text-sm shadow-inner"
+      style={{ background: palette.lightcolor1, color: palette.darkcolor1 }}
+    >
+      <div>
+        <span className="font-semibold">🌐 وب‌سایت: </span>
+        <a href="https://nowex.com" target="_blank" rel="noopener noreferrer" className="hover:underline">
+          www.nowex.com
+        </a>
+      </div>
+      <div>
+        <span className="font-semibold">☎ مدیریت: </span>
+        <span>+98 21 1234 5678</span>
+      </div>
+    </footer>
+  );
+}
