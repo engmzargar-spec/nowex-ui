@@ -1,22 +1,21 @@
 "use client";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
-import { dashboardConfig } from "../../config/dashboardConfig";
 
-interface NetPnLCardProps {
-  netPnL: number;
-}
+import React from "react";
 
-export default function NetPnLCard({ netPnL }: NetPnLCardProps) {
-  const { card } = dashboardConfig;
+type NetPnLCardProps = {
+  netPnL?: number;
+  className?: string;
+};
+
+export default function NetPnLCard({ netPnL, className }: NetPnLCardProps) {
   return (
-    <Card
-      shadow={card.shadow ? "sm" : "none"}
-      style={{ borderRadius: card.radius, border: `1px solid ${card.borderColor}` }}
-    >
-      <CardHeader className="font-bold">تفاضل سود و ضرر</CardHeader>
-      <CardBody>
-        <div className="text-2xl font-extrabold">{netPnL.toLocaleString("fa-IR")} ریال</div>
-      </CardBody>
-    </Card>
+    <div className={`p-4 rounded-xl shadow-sm bg-transparent border-2 border-pink-500 ${className}`}>
+      <h3 className="text-base font-semibold mb-3">سود/زیان خالص</h3>
+      {netPnL !== undefined ? (
+        <p className="text-lg font-bold">{netPnL.toLocaleString()} ریال</p>
+      ) : (
+        <p className="text-sm text-gray-500">داده‌ای موجود نیست</p>
+      )}
+    </div>
   );
 }

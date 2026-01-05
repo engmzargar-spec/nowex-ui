@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { dashboardConfig } from "../config/dashboardConfig";
+import { cardBorderColors } from "../context/dashboardContext";
 
 // کارت‌ها
 import BalanceCard from "../components/cards/BalanceCard";
@@ -15,7 +16,6 @@ import NetPnLCard from "../components/cards/NetPnLCard";
 import SymbolsPieCard from "../components/cards/SymbolsPieCard";
 
 // سرویس‌ها
-import { fetchDashboardData } from "../services/dataService";
 import { computeDashboard } from "../services/computeEngine";
 import { ComputedDashboard } from "../types";
 
@@ -34,7 +34,6 @@ export default function Dashboard() {
     async function load() {
       setLoading(true);
       try {
-        // داده‌ی تستی (فعلاً تا اتصال واقعی به بک‌اند)
         const fakeData = {
           account: {
             initialBalance: 100000000,
@@ -79,13 +78,11 @@ export default function Dashboard() {
   }, [range]);
 
   return (
-    <div className="p-2 sm:p-4 md:p-6">
-      {/* کنترل بازه زمانی */}
+    <div className="min-h-screen p-2 sm:p-4 md:p-6 bg-background text-foreground">
       <div className="mb-4">
         <TimeRangeSelector onChange={setRange} />
       </div>
 
-      {/* شبکه کارت‌ها */}
       <div
         className="
           grid grid-cols-1
@@ -98,24 +95,15 @@ export default function Dashboard() {
       >
         {computed ? (
           <>
-            <BalanceCard data={computed.balanceCard} />
-            <UsersTotalCard count={computed.usersTotal} />
-            <ActiveUsersCard count={computed.usersActive} />
-            <OpenTradesCard
-              count={computed.openTrades.count}
-              totalVolume={computed.openTrades.totalVolume}
-            />
-            <FeesRevenueCard totalVolume={computed.openTrades.totalVolume} />
-            <ProfitTradesCard
-              count={computed.profitTrades.count}
-              totalProfit={computed.profitTrades.totalProfit}
-            />
-            <LossTradesCard
-              count={computed.lossTrades.count}
-              totalLoss={computed.lossTrades.totalLoss}
-            />
-            <NetPnLCard netPnL={computed.netPnL} />
-            <SymbolsPieCard byCount={computed.symbolsPie.byCount} />
+            <BalanceCard data={computed.balanceCard} className={`border-l-4 ${cardBorderColors.balance}`} />
+            <UsersTotalCard count={computed.usersTotal} className={`border-l-4 ${cardBorderColors.usersTotal}`} />
+            <ActiveUsersCard count={computed.usersActive} className={`border-l-4 ${cardBorderColors.usersActive}`} />
+            <OpenTradesCard count={computed.openTrades.count} totalVolume={computed.openTrades.totalVolume} className={`border-l-4 ${cardBorderColors.openTrades}`} />
+            <FeesRevenueCard totalVolume={computed.openTrades.totalVolume} className={`border-l-4 ${cardBorderColors.feesRevenue}`} />
+            <ProfitTradesCard count={computed.profitTrades.count} totalProfit={computed.profitTrades.totalProfit} className={`border-l-4 ${cardBorderColors.profitTrades}`} />
+            <LossTradesCard count={computed.lossTrades.count} totalLoss={computed.lossTrades.totalLoss} className={`border-l-4 ${cardBorderColors.lossTrades}`} />
+            <NetPnLCard netPnL={computed.netPnL} className={`border-l-4 ${cardBorderColors.netPnL}`} />
+            <SymbolsPieCard byCount={computed.symbolsPie.byCount} className={`border-l-4 ${cardBorderColors.symbolsPie}`} />
           </>
         ) : (
           <div className="col-span-full text-center text-gray-500 text-sm md:text-base">

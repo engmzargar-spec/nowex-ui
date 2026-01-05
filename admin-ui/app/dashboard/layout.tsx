@@ -12,46 +12,44 @@ import DesktopFooter from "../components/desktop/DesktopFooter";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
 
-  // موبایل: کنترل باز/بسته بودن
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  // موبایل: کنترل مونت برای انیمیشن
   const [mobileSidebarMounted, setMobileSidebarMounted] = useState(false);
-
-  // دسکتاپ
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
 
-  // مدیریت مونت/آنمونت سایدبار موبایل
   useEffect(() => {
     if (mobileSidebarOpen) {
       setMobileSidebarMounted(true);
+      document.body.style.overflow = "hidden";
     } else {
-      const t = setTimeout(() => setMobileSidebarMounted(false), 300); // مدت انیمیشن
+      document.body.style.overflow = "";
+      const t = setTimeout(() => setMobileSidebarMounted(false), 300);
       return () => clearTimeout(t);
     }
   }, [mobileSidebarOpen]);
 
   if (isMobile === null) return null;
 
+  // 👇 لایه اصلی صفحه، بدون هیچ لایه اضافی
+  // در حالت روشن: سفید / در حالت تاریک: خاکستری تیره
+  // اگر بخوای گرادیانت بذاری، همینجا تغییر می‌دی
+  const baseClass =
+    "min-h-screen flex flex-col bg-background text-foreground";
+
   if (isMobile) {
     const toggleMobileSidebar = () => setMobileSidebarOpen((prev) => !prev);
 
     return (
-      <div className="flex flex-col min-h-screen">
-        {/* هدر موبایل */}
+      <div className={baseClass}>
         <MobileHeader
           isSidebarOpen={mobileSidebarOpen}
           onToggleSidebar={toggleMobileSidebar}
         />
-
-        {/* سایدبار موبایل */}
         {mobileSidebarMounted && (
           <MobileSidebar
             open={mobileSidebarOpen}
             onClose={() => setMobileSidebarOpen(false)}
           />
         )}
-
-        {/* پنل اصلی موبایل */}
         <main className="flex-1 p-3">
           <MobileDashboardPanel />
         </main>
@@ -59,9 +57,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // نسخه دسکتاپ
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className={baseClass}>
       <DesktopHeader
         onToggleSidebar={() => setDesktopSidebarOpen(!desktopSidebarOpen)}
       />

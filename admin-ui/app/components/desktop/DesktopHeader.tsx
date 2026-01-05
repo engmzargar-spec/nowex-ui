@@ -34,7 +34,7 @@ export default function DesktopHeader({ onToggleSidebar }: { onToggleSidebar: ()
   return (
     <header
       style={{ backgroundColor: bgColor, color: textColor }}
-      className="h-20 flex items-center justify-between px-8 shadow-md"
+      className="h-30 flex items-center justify-between px-8 shadow-md"
     >
       {/* Left */}
       <div className="flex items-center gap-4">

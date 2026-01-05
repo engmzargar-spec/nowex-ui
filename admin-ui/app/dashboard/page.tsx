@@ -1,7 +1,7 @@
 "use client";
 
-import Dashboard from "./Dashboard";
+import DesktopDashboardPanel from "../components/desktop/DesktopDashboardPanel";
 
 export default function DashboardPage() {
-  return <Dashboard />;
+  return <DesktopDashboardPanel />;
 }

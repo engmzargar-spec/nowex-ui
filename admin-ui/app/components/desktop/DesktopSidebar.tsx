@@ -56,7 +56,7 @@ export default function DesktopSidebar({
   return (
     <aside
       style={{ backgroundColor: bgColor, color: textColor }}
-      className={`${isOpen ? "w-56" : "w-16"} h-screen shadow-md flex flex-col transition-all duration-300`}
+      className={`${isOpen ? "w-56" : "w-16"} flex-shrink-0 h-screen shadow-md flex flex-col transition-all duration-300 border-r border-white/10`}
     >
       {/* عنوان + دکمه بستن */}
       <div className="flex justify-between items-center px-4 py-4 font-bold text-lg">
@@ -75,7 +75,7 @@ export default function DesktopSidebar({
           const isExpanded = expanded === menu.id;
           return (
             <div key={menu.id} className="mb-3">
-              {/* آیتم منو با فاصله معتبر بین آیکن و لیبل */}
+              {/* آیتم منو */}
               <div
                 className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/10"
                 onClick={() => handleMenuClick(menu.id)}
@@ -89,7 +89,7 @@ export default function DesktopSidebar({
                 )}
               </div>
 
-              {/* زیرمنوها با انیمیشن نرم و فاصله عمودی بیشتر */}
+              {/* زیرمنوها */}
               <div
                 className={`transition-all duration-500 ease-in-out overflow-hidden ${
                   isExpanded && isOpen ? "max-h-64" : "max-h-0"
@@ -107,7 +107,7 @@ export default function DesktopSidebar({
                 </div>
               </div>
 
-              {/* خط جداکننده بین منوها */}
+              {/* خط جداکننده */}
               {index < menuItems.length - 1 && (
                 <hr className="border-t border-white/10 mx-4 mt-2" />
               )}
@@ -117,8 +117,12 @@ export default function DesktopSidebar({
       </nav>
 
       {/* فوتر با دکمه تنظیمات */}
-      <div className="px-4 py-3 border-t border-white/10">
-        <Button className="w-full">
+      <div className={`${isOpen ? "px-4" : "px-0"} py-3 border-t border-white/10`}>
+        <Button
+          className={`transition-all duration-300 ${
+            isOpen ? "w-full" : "w-14 mx-auto min-w-0 p-2"
+          }`}
+        >
           {isOpen ? "تنظیمات" : <Cog6ToothIcon className="w-5 h-5" />}
         </Button>
       </div>

@@ -1,28 +1,21 @@
 "use client";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
-import { dashboardConfig } from "../../config/dashboardConfig";
 
-interface FeesRevenueCardProps {
-  totalVolume: number; // مجموع معاملات باز
-}
+import React from "react";
 
-export default function FeesRevenueCard({ totalVolume }: FeesRevenueCardProps) {
-  const { card } = dashboardConfig;
+type FeesRevenueCardProps = {
+  totalVolume?: number;
+  className?: string;
+};
 
-  // فرمول محاسبه کارمزد: هر واحد معامله = 100000 ریال
-  const feesRevenue = totalVolume * 100000;
-
+export default function FeesRevenueCard({ totalVolume, className }: FeesRevenueCardProps) {
   return (
-    <Card
-      shadow={card.shadow ? "sm" : "none"}
-      style={{ borderRadius: card.radius, border: `1px solid ${card.borderColor}` }}
-    >
-      <CardHeader className="font-bold">درآمد حاصل از کارمزدها</CardHeader>
-      <CardBody>
-        <div className="text-2xl font-extrabold">
-          {feesRevenue.toLocaleString("fa-IR")} ریال
-        </div>
-      </CardBody>
-    </Card>
+    <div className={`p-4 rounded-xl shadow-sm bg-transparent border-2 border-purple-500 ${className}`}>
+      <h3 className="text-base font-semibold mb-3">درآمد حاصل از کارمزدها</h3>
+      {totalVolume !== undefined ? (
+        <p className="text-lg font-bold">{totalVolume.toLocaleString()} ریال</p>
+      ) : (
+        <p className="text-sm text-gray-500">داده‌ای موجود نیست</p>
+      )}
+    </div>
   );
 }

@@ -10,12 +10,11 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { palette } from "../../theme/palette";
 
 const menuItems = [
   { id: "dashboard", title: "داشبورد", icon: HomeIcon },
-
   {
     id: "adminusers",
     title: "کاربران ادمین",
@@ -25,7 +24,6 @@ const menuItems = [
       { id: "admins-add", title: "افزودن ادمین" },
     ],
   },
-
   {
     id: "users",
     title: "کاربران سایت",
@@ -35,7 +33,6 @@ const menuItems = [
       { id: "users-add", title: "افزودن کاربر" },
     ],
   },
-
   {
     id: "mali",
     title: "بررسی‌های مالی",
@@ -46,7 +43,6 @@ const menuItems = [
       { id: "fees", title: "کارمزدها" },
     ],
   },
-
   {
     id: "messaging",
     title: "سیستم پیام",
@@ -57,9 +53,7 @@ const menuItems = [
       { id: "templates", title: "قالب‌های پیام" },
     ],
   },
-
   { id: "analytics", title: "آمارها", icon: ChartBarIcon },
-
   { id: "settings", title: "تنظیمات", icon: Cog6ToothIcon },
 ];
 
@@ -70,21 +64,7 @@ export default function MobileSidebar({
   open: boolean;
   onClose: () => void;
 }) {
-  const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-      const t = setTimeout(() => setMounted(false), 300);
-      return () => clearTimeout(t);
-    }
-  }, [open]);
-
-  if (!mounted) return null;
 
   return (
     <div
@@ -102,7 +82,7 @@ export default function MobileSidebar({
 
       {/* سایدبار */}
       <aside
-        className={`absolute top-14 right-0 w-[14rem] h-[calc(100vh-56px)] shadow-lg flex flex-col transform transition-transform duration-300 ${
+        className={`absolute top-0 right-0 w-[14rem] h-full shadow-lg flex flex-col transform transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
         style={{
@@ -129,9 +109,7 @@ export default function MobileSidebar({
             return (
               <div key={menu.id}>
                 <button
-                  onClick={() =>
-                    setExpanded(isExpanded ? null : menu.id)
-                  }
+                  onClick={() => setExpanded(isExpanded ? null : menu.id)}
                   className="w-full flex items-center gap-2 py-2 px-2 rounded-md hover:bg-white/10 text-left"
                 >
                   {Icon && <Icon className="w-4 h-4 shrink-0" />}

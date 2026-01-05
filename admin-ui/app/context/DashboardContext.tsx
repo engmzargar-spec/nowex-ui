@@ -40,7 +40,6 @@ const menuItems: MenuItem[] = [
       { id: "roles", title: "ویرایش اطلاعات" },
     ],
   },
-  // سایر منوها همینطور اضافه شوند
 ];
 
 const userInfo: UserInfo = {
@@ -66,4 +65,17 @@ export const useDashboard = () => {
     throw new Error("useDashboard must be used within a DashboardProvider");
   }
   return context;
+};
+
+// 🎨 رنگ‌های حاشیه کارت‌ها
+export const cardBorderColors: Record<string, string> = {
+  balance: "border-yellow-500",
+  usersTotal: "border-blue-500",
+  usersActive: "border-indigo-500",
+  openTrades: "border-green-500",
+  feesRevenue: "border-purple-500",
+  profitTrades: "border-emerald-500",
+  lossTrades: "border-red-500",
+  netPnL: "border-pink-500",
+  symbolsPie: "border-cyan-500",
 };

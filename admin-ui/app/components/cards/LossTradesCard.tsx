@@ -1,32 +1,25 @@
 "use client";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
-import { dashboardConfig } from "../../config/dashboardConfig";
 
-interface LossTradesCardProps {
-  count: number;
-  totalLoss: number;
-}
+import React from "react";
 
-export default function LossTradesCard({ count, totalLoss }: LossTradesCardProps) {
-  const { card } = dashboardConfig;
+type LossTradesCardProps = {
+  count?: number;
+  totalLoss?: number;
+  className?: string;
+};
+
+export default function LossTradesCard({ count, totalLoss, className }: LossTradesCardProps) {
   return (
-    <Card
-      shadow={card.shadow ? "sm" : "none"}
-      style={{ borderRadius: card.radius, border: `1px solid ${card.borderColor}` }}
-    >
-      <CardHeader className="font-bold">معاملات در ضرر و مجموع ضرر</CardHeader>
-      <CardBody>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <span className="text-gray-500">تعداد:</span>
-            <div className="font-semibold">{count.toLocaleString("fa-IR")}</div>
-          </div>
-          <div>
-            <span className="text-gray-500">مجموع ضرر:</span>
-            <div className="font-semibold">{totalLoss.toLocaleString("fa-IR")} ریال</div>
-          </div>
-        </div>
-      </CardBody>
-    </Card>
+    <div className={`p-4 rounded-xl shadow-sm bg-transparent border-2 border-red-500 ${className}`}>
+      <h3 className="text-base font-semibold mb-3">معاملات زیان‌ده</h3>
+      {count !== undefined && totalLoss !== undefined ? (
+        <ul className="space-y-1 text-sm">
+          <li>تعداد: <span className="font-bold">{count.toLocaleString()}</span></li>
+          <li>زیان کل: <span className="font-bold">{totalLoss.toLocaleString()} ریال</span></li>
+        </ul>
+      ) : (
+        <p className="text-sm text-gray-500">داده‌ای موجود نیست</p>
+      )}
+    </div>
   );
 }

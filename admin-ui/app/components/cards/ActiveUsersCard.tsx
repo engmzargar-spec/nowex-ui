@@ -1,24 +1,21 @@
 "use client";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
-import { dashboardConfig } from "../../config/dashboardConfig";
 
-interface ActiveUsersCardProps {
-  count: number;
-}
+import React from "react";
 
-export default function ActiveUsersCard({ count }: ActiveUsersCardProps) {
-  const { card } = dashboardConfig;
+type ActiveUsersCardProps = {
+  count?: number;
+  className?: string;
+};
+
+export default function ActiveUsersCard({ count, className }: ActiveUsersCardProps) {
   return (
-    <Card
-      shadow={card.shadow ? "sm" : "none"}
-      style={{ borderRadius: card.radius, border: `1px solid ${card.borderColor}` }}
-    >
-      <CardHeader className="font-bold">تعداد کاربران فعال</CardHeader>
-      <CardBody>
-        <div className="text-2xl font-extrabold">
-          {count.toLocaleString("fa-IR")} نفر
-        </div>
-      </CardBody>
-    </Card>
+    <div className={`p-4 rounded-xl shadow-sm bg-transparent border-2 border-indigo-500 ${className}`}>
+      <h3 className="text-base font-semibold mb-3">کاربران فعال</h3>
+      {count !== undefined ? (
+        <p className="text-lg font-bold">{count.toLocaleString()}</p>
+      ) : (
+        <p className="text-sm text-gray-500">داده‌ای موجود نیست</p>
+      )}
+    </div>
   );
 }

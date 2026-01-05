@@ -1,49 +1,55 @@
 "use client";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
-import { dashboardConfig } from "../../config/dashboardConfig";
 
-export interface BalanceCardProps {
-  data: {
-    initialBalance: number;
-    pnl: number;
-    currentBalance: number;
-    fees: number;
+import React from "react";
+
+type BalanceCardProps = {
+  data?: {
+    initialBalance?: number;
+    totalFees?: number;
+    realizedPnL?: number;
+    unrealizedPnL?: number;
   };
-  title?: string;
-}
+  className?: string;
+};
 
-export default function BalanceCard({ data, title = "وضعیت حساب پلتفرم" }: BalanceCardProps) {
-  const { card } = dashboardConfig;
+export default function BalanceCard({ data, className }: BalanceCardProps) {
   return (
-    <Card
-      shadow={card.shadow ? "sm" : "none"}
-      className="w-full"
-      style={{
-        borderRadius: card.radius,
-        border: `1px solid ${card.borderColor}`,
-      }}
-    >
-      <CardHeader className="font-bold">{title}</CardHeader>
-      <CardBody className="text-sm">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <span className="text-gray-500">بالانس اولیه:</span>
-            <div className="font-semibold">{data.initialBalance.toLocaleString("fa-IR")} ریال</div>
-          </div>
-          <div>
-            <span className="text-gray-500">سود/زیان:</span>
-            <div className="font-semibold">{data.pnl.toLocaleString("fa-IR")} ریال</div>
-          </div>
-          <div>
-            <span className="text-gray-500">کارمزدها:</span>
-            <div className="font-semibold">{data.fees.toLocaleString("fa-IR")} ریال</div>
-          </div>
-          <div>
-            <span className="text-gray-500">بالانس فعلی:</span>
-            <div className="font-semibold">{data.currentBalance.toLocaleString("fa-IR")} ریال</div>
-          </div>
-        </div>
-      </CardBody>
-    </Card>
+    <div className={`p-4 rounded-xl shadow-sm bg-transparent border-2 border-yellow-500 ${className}`}>
+      <h3 className="text-base font-semibold mb-3">وضعیت حساب پلتفرم</h3>
+      {data ? (
+        <ul className="space-y-1 text-sm">
+          <li>
+            بالانس اولیه:{" "}
+            <span className="font-bold">
+              {data.initialBalance !== undefined ? data.initialBalance.toLocaleString() : "—"}
+            </span>{" "}
+            ریال
+          </li>
+          <li>
+            کارمزدها:{" "}
+            <span className="font-bold">
+              {data.totalFees !== undefined ? data.totalFees.toLocaleString() : "—"}
+            </span>{" "}
+            ریال
+          </li>
+          <li>
+            سود تحقق‌یافته:{" "}
+            <span className="font-bold">
+              {data.realizedPnL !== undefined ? data.realizedPnL.toLocaleString() : "—"}
+            </span>{" "}
+            ریال
+          </li>
+          <li>
+            سود/زیان تحقق‌نیافته:{" "}
+            <span className="font-bold">
+              {data.unrealizedPnL !== undefined ? data.unrealizedPnL.toLocaleString() : "—"}
+            </span>{" "}
+            ریال
+          </li>
+        </ul>
+      ) : (
+        <p className="text-sm text-gray-500">داده‌ای موجود نیست</p>
+      )}
+    </div>
   );
 }
