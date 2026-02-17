@@ -1,15 +1,29 @@
 "use client";
 
-import { Card } from "@nextui-org/react";
+import { Card, Button } from "@nextui-org/react";
 import { palette } from "../../theme/palette";
+import { useRouter } from "next/navigation";
 
 export default function MobileDashboardPanel({ bgColor }: { bgColor: string }) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push("/mobile/login");
+  };
+
   return (
-    <div className={`flex flex-col gap-4 p-3 transition-colors duration-300 ${bgColor}`}>
-      {/* وضعیت حساب */}
+    <div
+      className={`flex flex-col gap-4 p-3 transition-colors duration-300 ${bgColor}`}
+    >
+      {/* -------------------------------------------------- */}
+      {/* کارت وضعیت حساب – رنگ طلایی برند NOWEX */}
+      {/* -------------------------------------------------- */}
       <Card
         className="p-3 rounded-xl shadow-md"
-        style={{ backgroundColor: palette.gold, color: palette.darkcolor1 }}
+        style={{
+          backgroundColor: palette.lightcolor16, // 🎨 طلایی برند NOWEX
+          color: palette.darkcolor1, // 🎨 متن تیره برای کنتراست
+        }}
       >
         <h2 className="text-sm font-bold mb-2">وضعیت حساب پلتفرم</h2>
         <div className="text-xs space-y-1">
@@ -18,10 +32,15 @@ export default function MobileDashboardPanel({ bgColor }: { bgColor: string }) {
         </div>
       </Card>
 
-      {/* کاربران */}
+      {/* -------------------------------------------------- */}
+      {/* کارت کاربران – رنگ روشن آبی از پالت */}
+      {/* -------------------------------------------------- */}
       <Card
         className="p-3 rounded-xl shadow-md"
-        style={{ backgroundColor: "#3B82F6", color: "white" }}
+        style={{
+          backgroundColor: palette.lightcolor10, // 🎨 آبی روشن (جایگزین #3B82F6)
+          color: palette.lightcolor1, // 🎨 متن تیره برای خوانایی
+        }}
       >
         <h2 className="text-sm font-bold mb-2">کاربران</h2>
         <div className="flex justify-between text-xs">
@@ -30,10 +49,15 @@ export default function MobileDashboardPanel({ bgColor }: { bgColor: string }) {
         </div>
       </Card>
 
-      {/* معاملات */}
+      {/* -------------------------------------------------- */}
+      {/* کارت معاملات – رنگ سبز روشن از پالت */}
+      {/* -------------------------------------------------- */}
       <Card
         className="p-3 rounded-xl shadow-md"
-        style={{ backgroundColor: "#10B981", color: "white" }}
+        style={{
+          backgroundColor: palette.lightcolor19, // 🎨 زرد/سبز روشن (جایگزین #10B981)
+          color: palette.darkcolor5,
+        }}
       >
         <h2 className="text-sm font-bold mb-2">معاملات</h2>
         <div className="text-xs space-y-1">
@@ -42,19 +66,29 @@ export default function MobileDashboardPanel({ bgColor }: { bgColor: string }) {
         </div>
       </Card>
 
-      {/* درآمد حاصل از کارمزدها */}
+      {/* -------------------------------------------------- */}
+      {/* کارت درآمد کارمزدها – رنگ بنفش/طلایی از پالت */}
+      {/* -------------------------------------------------- */}
       <Card
         className="p-3 rounded-xl shadow-md"
-        style={{ backgroundColor: "#8B5CF6", color: "white" }}
+        style={{
+          backgroundColor: palette.lightcolor9, // 🎨 قهوه‌ای/بنفش تیره (جایگزین #8B5CF6)
+          color: palette.lightcolor1,
+        }}
       >
         <h2 className="text-sm font-bold mb-2">درآمد کارمزدها</h2>
         <p className="text-xs">500,000 ریال</p>
       </Card>
 
-      {/* معاملات سودده */}
+      {/* -------------------------------------------------- */}
+      {/* کارت معاملات سودده – رنگ نارنجی برند NOWEX */}
+      {/* -------------------------------------------------- */}
       <Card
         className="p-3 rounded-xl shadow-md"
-        style={{ backgroundColor: "#F59E0B", color: "white" }}
+        style={{
+          backgroundColor: palette.lightcolor20, // 🎨 نارنجی برند NOWEX (جایگزین #F59E0B)
+          color: palette.lightcolor1,
+        }}
       >
         <h2 className="text-sm font-bold mb-2">معاملات سودده</h2>
         <p className="text-xs">2,500,000 ریال</p>

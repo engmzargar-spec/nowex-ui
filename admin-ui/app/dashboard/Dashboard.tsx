@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { dashboardConfig } from "../config/dashboardConfig";
-import { cardBorderColors } from "../context/dashboardContext";
+import { cardBorderColors } from "../context/DashboardContext";
 
 // کارت‌ها
 import BalanceCard from "../components/cards/BalanceCard";

@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import TimeRangeSelector from "../TimeRangeSelector";
 
 import ActiveUsersCard from "../cards/ActiveUsersCard";
@@ -13,24 +12,44 @@ import ProfitTradesCard from "../cards/ProfitTradesCard";
 import SymbolsPieCard from "../cards/SymbolsPieCard";
 import UsersTotalCard from "../cards/UsersTotalCard";
 
-export default function DesktopDashboardPanel() {
-  const { theme } = useTheme();
+// 🎨 ThemeContext برای تشخیص تم فعلی
+import { useThemeContext } from "../../context/ThemeContext";
 
-  const panelBg = theme === "dark" ? "bg-gray-900" : "bg-gray-50";
+// 🎨 پالت رنگ برند NOWEX
+import { palette } from "../../theme/palette";
+
+export default function DesktopDashboardPanel() {
+  const { desktopTheme } = useThemeContext();
+
+  // 🎨 رنگ پس‌زمینه پنل بر اساس تم
+  const panelBg =
+    desktopTheme === "dark"
+      ? palette.darkcolor14 // پس‌زمینه تیره
+      : palette.lightcolor1; // پس‌زمینه روشن
+
+  // 🎨 رنگ کارت‌ها بر اساس تم
   const cardClasses =
-    theme === "dark"
-      ? "bg-gray-800 text-gray-100"
-      : "bg-white text-gray-900";
+    desktopTheme === "dark"
+      ? `${palette.darkcolor12} text-gray-100` // کارت تیره
+      : `${palette.lightcolor3} text-gray-900`; // کارت روشن
 
   return (
-    <main className={`flex-1 p-6 overflow-y-auto ${panelBg}`}>
+    <main
+      className="flex-1 p-6 overflow-y-auto"
+      style={{
+        backgroundColor: panelBg, // 🎨 اعمال رنگ پس‌زمینه از پالت
+      }}
+    >
+      {/* 🎛 انتخاب بازه زمانی */}
       <div className="mb-6">
         <TimeRangeSelector />
       </div>
 
+      {/* 📊 شبکه کارت‌های داشبورد */}
       <div className="grid grid-cols-3 gap-6">
         <ActiveUsersCard className={cardClasses} count={120} />
         <UsersTotalCard className={cardClasses} count={500} />
+
         <BalanceCard
           className={cardClasses}
           data={{
@@ -40,11 +59,13 @@ export default function DesktopDashboardPanel() {
             unrealizedPnL: -5_000,
           }}
         />
+
         <FeesRevenueCard className={cardClasses} totalVolume={3_200} />
         <ProfitTradesCard className={cardClasses} count={85} totalProfit={1_500_000} />
         <LossTradesCard className={cardClasses} count={15} totalLoss={750_000} />
         <OpenTradesCard className={cardClasses} count={40} totalVolume={2_500_000} />
         <NetPnLCard className={cardClasses} netPnL={12_000} />
+
         <SymbolsPieCard
           className={cardClasses}
           byCount={[

@@ -9,19 +9,20 @@ import {
 import { Button, Avatar } from "@nextui-org/react";
 import { palette } from "../../theme/palette";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // 📌 اضافه شد
+import { useRouter } from "next/navigation";
+import Image from "next/image"; // اضافه‌شده برای نمایش لوگو
 
 export default function MobileHeader({
   isSidebarOpen,
   onToggleSidebar,
-  onToggleDashboardBg, // 📌 تابعی برای تغییر رنگ پس‌زمینه داشبورد
+  onToggleDashboardBg,
 }: {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
   onToggleDashboardBg: () => void;
 }) {
   const [isMoon, setIsMoon] = useState(true);
-  const router = useRouter(); // 📌 برای هدایت کاربر
+  const router = useRouter();
 
   const handleToggleBg = () => {
     setIsMoon(!isMoon);
@@ -29,21 +30,23 @@ export default function MobileHeader({
   };
 
   const handleLogout = () => {
-    router.push("/login"); // 📌 مسیر درست برای صفحه لاگین موبایل
+    router.push("/mobile/login");
   };
 
   return (
     <header
-      className="flex items-center justify-between px-4 h-14 shadow-md"
-      style={{ backgroundColor: palette.darkcolor1, color: palette.lightcolor1 }}
+      className="flex items-center justify-between px-4 h-[72px] shadow-md"
+      style={{
+        backgroundColor: palette.darkcolor16,
+        color: palette.lightcolor1,
+      }}
     >
-      {/* راست چین: دکمه منو + آواتار */}
       <div className="flex items-center gap-3">
         <Button
           isIconOnly
           variant="light"
           onClick={onToggleSidebar}
-          className="text-yellow-400"
+          className="text-white-400"
           aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
         >
           <Bars3Icon className="w-6 h-6" />
@@ -51,31 +54,34 @@ export default function MobileHeader({
         <Avatar name="M" size="sm" />
       </div>
 
-      {/* لوگو وسط-راست */}
-      <div className="text-lg font-bold select-none">NOW‑EX</div>
+      {/* لوگوی مرکزی به‌جای متن NOW‑EX */}
+      <div className="flex items-center justify-center">
+        <Image
+          src="/nowex-logo-green.png"
+          alt="NOW‑EX Logo"
+          width={100}
+          height={32}
+          className="object-contain"
+        />
+      </div>
 
-      {/* سمت چپ: دکمه تغییر رنگ داشبورد + خروج */}
       <div className="flex items-center gap-2">
         <Button
           isIconOnly
           variant="light"
-          className="text-blue-400"
+          className="text-with-400"
           aria-label="Toggle dashboard background"
           onClick={handleToggleBg}
         >
-          {isMoon ? (
-            <MoonIcon className="w-6 h-6" />
-          ) : (
-            <StarIcon className="w-6 h-6" />
-          )}
+          {isMoon ? <MoonIcon className="w-6 h-6" /> : <StarIcon className="w-6 h-6" />}
         </Button>
 
         <Button
           isIconOnly
           variant="light"
-          className="text-red-500"
+          className="text-with-500"
           aria-label="Logout"
-          onClick={handleLogout} // 📌 اصلاح شد
+          onClick={handleLogout}
         >
           <ArrowRightOnRectangleIcon className="w-6 h-6" />
         </Button>

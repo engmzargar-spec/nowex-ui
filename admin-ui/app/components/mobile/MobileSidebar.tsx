@@ -12,18 +12,21 @@ import {
 import { Button } from "@nextui-org/react";
 import { useState } from "react";
 import { palette } from "../../theme/palette";
+import { useRouter } from "next/navigation";
 
 const menuItems = [
   { id: "dashboard", title: "داشبورد", icon: HomeIcon },
+
   {
     id: "adminusers",
     title: "کاربران ادمین",
     icon: UserGroupIcon,
     children: [
-      { id: "admins-list", title: "لیست ادمین‌ها" },
-      { id: "admins-add", title: "افزودن ادمین" },
+      { id: "admins-list", title: "مشاهده کلیه کاربران", route: "/dashboard/adminusers" },
+      { id: "admins-add", title: "ایجاد کاربر ادمین جدید", route: "/dashboard/adminusers/create" },
     ],
   },
+
   {
     id: "users",
     title: "کاربران سایت",
@@ -33,6 +36,7 @@ const menuItems = [
       { id: "users-add", title: "افزودن کاربر" },
     ],
   },
+
   {
     id: "mali",
     title: "بررسی‌های مالی",
@@ -43,6 +47,7 @@ const menuItems = [
       { id: "fees", title: "کارمزدها" },
     ],
   },
+
   {
     id: "messaging",
     title: "سیستم پیام",
@@ -53,40 +58,31 @@ const menuItems = [
       { id: "templates", title: "قالب‌های پیام" },
     ],
   },
+
   { id: "analytics", title: "آمارها", icon: ChartBarIcon },
   { id: "settings", title: "تنظیمات", icon: Cog6ToothIcon },
 ];
 
-export default function MobileSidebar({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export default function MobileSidebar({ open, onClose }) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const router = useRouter();
+
+  if (!open) return null; // ⬅ مهم‌ترین خط برای رفع مشکل Overlay
 
   return (
-    <div
-      className={`fixed inset-0 transition-opacity duration-300 ${
-        open ? "opacity-100 pointer-events-auto z-50" : "opacity-0 pointer-events-none z-0"
-      }`}
-    >
+    <div className="fixed inset-0 z-50 pointer-events-auto">
+
       {/* بک‌دراب */}
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
-          open ? "opacity-50" : "opacity-0"
-        }`}
+        className="absolute inset-0 bg-black opacity-50"
         onClick={onClose}
       />
 
       {/* سایدبار */}
       <aside
-        className={`absolute top-0 right-0 w-[14rem] h-full shadow-lg flex flex-col transform transition-transform duration-300 ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
+        className="absolute top-0 right-0 w-[14rem] h-full shadow-lg flex flex-col transform transition-transform duration-300 translate-x-0"
         style={{
-          backgroundColor: palette.darkcolor1,
+          backgroundColor: palette.darkcolor14,
           color: palette.lightcolor1,
           borderRadius: 12,
         }}
@@ -116,13 +112,15 @@ export default function MobileSidebar({
                   <span className="text-sm whitespace-nowrap">{menu.title}</span>
                 </button>
 
-                {/* زیرمنوها */}
                 {menu.children && isExpanded && (
                   <div className="ml-6 mt-1 space-y-1">
                     {menu.children.map((child) => (
                       <button
                         key={child.id}
                         className="w-full text-xs py-1 px-2 rounded-md hover:bg-white/5 text-left"
+                        onClick={() => {
+                          if (child.route) router.push(child.route);
+                        }}
                       >
                         {child.title}
                       </button>
@@ -130,7 +128,6 @@ export default function MobileSidebar({
                   </div>
                 )}
 
-                {/* خط جداکننده */}
                 {idx < menuItems.length - 1 && (
                   <div className="border-t border-white/20 my-2" />
                 )}
