@@ -10,8 +10,9 @@ export const adminUserService = {
       throw new Error("Not authenticated");
     }
 
+    // 🔥 مسیر درست — چون BASE_URL خودش /api/v1 دارد
     const res = await fetch(
-      `${BASE_URL}/api/v1/admin/users/`,
+      `${BASE_URL}/admin/users/`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

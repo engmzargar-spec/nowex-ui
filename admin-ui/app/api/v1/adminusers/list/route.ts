@@ -12,8 +12,9 @@ export async function GET() {
       );
     }
 
+    // 🔥 مسیر درست — چون BASE_URL خودش /api/v1 دارد
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/admin/users/`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users/`,
       {
         method: "GET",
         headers: {

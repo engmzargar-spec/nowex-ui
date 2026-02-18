@@ -7,7 +7,6 @@ import { toast } from "react-hot-toast";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem } from "@heroui/react";
 
-import apiClient from "../../services/apiClient";
 import { palette } from "../../theme/palette";
 import { useThemeContext } from "../../context/ThemeContext";
 
@@ -15,11 +14,11 @@ import { useThemeContext } from "../../context/ThemeContext";
 // 📌 مدل هماهنگ با بک‌اند NOWEX
 // -----------------------------
 type AdminUser = {
-  id: string;          // UUID
+  id: string;
   username: string;
   email: string;
   full_name: string;
-  role: string;        // superadmin
+  role: string;
   is_active: boolean;
 };
 
@@ -52,7 +51,7 @@ export default function AdminUsersDesktop() {
   const [totalCount, setTotalCount] = useState<number>(0);
 
   // -----------------------------
-  // 📌 لود کاربران
+  // 📌 لود کاربران از API داخلی Next.js
   // -----------------------------
   useEffect(() => {
     async function loadUsers() {
@@ -68,15 +67,21 @@ export default function AdminUsersDesktop() {
         const query = params.toString();
 
         const url = query
-          ? `/api/v1/admin/users?${query}`
-          : `/api/v1/admin/users`;
+          ? `/api/v1/adminusers/list?${query}`
+          : `/api/v1/adminusers/list`;
 
-        const res = await apiClient.get(url);
-        const data: AdminUserListResponse = res.data;
+        const res = await fetch(url, { cache: "no-store" });
+
+        if (!res.ok) {
+          toast.error("خطا در دریافت اطلاعات کاربران");
+          return;
+        }
+
+        const data: AdminUserListResponse = await res.json();
 
         setUsers(data.users);
         setTotalCount(data.total_count);
-      } catch {
+      } catch (err) {
         toast.error("خطا در دریافت اطلاعات کاربران");
       } finally {
         setLoadingUsers(false);
@@ -88,13 +93,25 @@ export default function AdminUsersDesktop() {
   }, [search, selectedRole, selectedStatus]);
 
   // -----------------------------
-  // 📌 حذف کاربر
+  // 📌 حذف کاربر (مستقیم به بک‌اند)
   // -----------------------------
   async function handleDelete(id: string) {
     if (!confirm("آیا از حذف این کاربر مطمئن هستید؟")) return;
 
     try {
-      await apiClient.delete(`/api/v1/admin/users/${id}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        toast.error("خطا در حذف کاربر");
+        return;
+      }
+
       setUsers((prev) => prev.filter((u) => u.id !== id));
       setTotalCount((prev) => prev - 1);
       toast.success("کاربر حذف شد");
