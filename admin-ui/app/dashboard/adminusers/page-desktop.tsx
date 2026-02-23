@@ -1,25 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Input, Spinner } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Spinner,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@nextui-org/react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Select, SelectItem } from "@heroui/react";
+import Cookies from "js-cookie";
 
 import { palette } from "../../theme/palette";
 import { useThemeContext } from "../../context/ThemeContext";
 
-// -----------------------------
-// 📌 مدل هماهنگ با بک‌اند NOWEX
-// -----------------------------
 type AdminUser = {
   id: string;
   username: string;
   email: string;
-  full_name: string;
-  role: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  position: string;
   is_active: boolean;
+  avatar_url?: string;
 };
 
 type AdminUserListResponse = {
@@ -46,31 +56,51 @@ export default function AdminUsersDesktop() {
   const [loadingUsers, setLoadingUsers] = useState(false);
 
   const [search, setSearch] = useState("");
-  const [selectedRole, setSelectedRole] = useState<string>("all");
+  const [selectedPosition, setSelectedPosition] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [totalCount, setTotalCount] = useState<number>(0);
 
-  // -----------------------------
-  // 📌 لود کاربران از API داخلی Next.js
-  // -----------------------------
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
+  const API_ROOT = API_BASE.replace("/api/v1", "");
+
+  // ------------------------------
+  // 🔥 دیالوگ حذف
+  // ------------------------------
+  const [deleteDialog, setDeleteDialog] = useState({
+    open: false,
+    userId: "",
+    username: "",
+  });
+
+  // ------------------------------
+  // 📌 Load Users
+  // ------------------------------
   useEffect(() => {
     async function loadUsers() {
       setLoadingUsers(true);
+
       try {
         const params = new URLSearchParams();
 
         if (search.trim()) params.append("search", search.trim());
         if (selectedStatus !== "all")
           params.append("is_active", selectedStatus === "active" ? "true" : "false");
-        if (selectedRole !== "all") params.append("role", selectedRole);
+        if (selectedPosition !== "all") params.append("position", selectedPosition);
 
         const query = params.toString();
 
         const url = query
-          ? `/api/v1/adminusers/list?${query}`
-          : `/api/v1/adminusers/list`;
+          ? `${API_BASE}/admin/users?${query}`
+          : `${API_BASE}/admin/users`;
 
-        const res = await fetch(url, { cache: "no-store" });
+        const token = Cookies.get("nowex_admin_token");
+
+        const res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        });
 
         if (!res.ok) {
           toast.error("خطا در دریافت اطلاعات کاربران");
@@ -90,31 +120,36 @@ export default function AdminUsersDesktop() {
     }
 
     loadUsers();
-  }, [search, selectedRole, selectedStatus]);
+  }, [search, selectedPosition, selectedStatus]);
 
-  // -----------------------------
-  // 📌 حذف کاربر (مستقیم به بک‌اند)
-  // -----------------------------
-  async function handleDelete(id: string) {
-    if (!confirm("آیا از حذف این کاربر مطمئن هستید؟")) return;
+  // ------------------------------
+  // 📌 Delete User
+  // ------------------------------
+  async function handleDeleteUser() {
+    const { userId } = deleteDialog;
+    if (!userId) return;
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+      const token = Cookies.get("nowex_admin_token");
+
+      const res = await fetch(`${API_BASE}/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         toast.error("خطا در حذف کاربر");
         return;
       }
 
-      setUsers((prev) => prev.filter((u) => u.id !== id));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
       setTotalCount((prev) => prev - 1);
-      toast.success("کاربر حذف شد");
+
+      toast.success("کاربر با موفقیت حذف شد");
+
+      setDeleteDialog({ open: false, userId: "", username: "" });
     } catch {
       toast.error("خطا در حذف کاربر");
     }
@@ -138,7 +173,7 @@ export default function AdminUsersDesktop() {
         borderRadius: "20px",
       }}
     >
-      {/* هدر */}
+      {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-xl font-bold mb-1">کلیه کاربران ادمین</h1>
@@ -163,9 +198,9 @@ export default function AdminUsersDesktop() {
         </Link>
       </div>
 
-      {/* فیلترها */}
+      {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-        {/* جستجو */}
+        {/* Search */}
         <div className="col-span-1">
           <p className="text-sm mb-1" style={{ color: text }}>
             جستجو
@@ -185,28 +220,27 @@ export default function AdminUsersDesktop() {
           />
         </div>
 
-        {/* نقش */}
+        {/* Position */}
         <div className="col-span-1">
           <p className="text-sm mb-1" style={{ color: text }}>
-            نقش
+            سمت
           </p>
 
           <Select
-            placeholder="انتخاب نقش"
-            selectedKeys={[selectedRole]}
-            onSelectionChange={(keys) => setSelectedRole(Array.from(keys)[0])}
+            placeholder="انتخاب سمت"
+            selectedKeys={[selectedPosition]}
+            onSelectionChange={(keys) => setSelectedPosition(Array.from(keys)[0])}
             className="w-full"
           >
-            <SelectItem key="all">همه نقش‌ها</SelectItem>
-            <SelectItem key="superadmin">مدیر ارشد</SelectItem>
-            <SelectItem key="support_agent">پشتیبان</SelectItem>
-            <SelectItem key="compliance_officer">افسر تطبیق</SelectItem>
-            <SelectItem key="risk_manager">مدیر ریسک</SelectItem>
-            <SelectItem key="financial_operator">اپراتور مالی</SelectItem>
+            <SelectItem key="all">همه سمت‌ها</SelectItem>
+            <SelectItem key="مدیر">مدیر</SelectItem>
+            <SelectItem key="پشتیبان">پشتیبان</SelectItem>
+            <SelectItem key="مالی">مالی</SelectItem>
+            <SelectItem key="ریسک">ریسک</SelectItem>
           </Select>
         </div>
 
-        {/* وضعیت */}
+        {/* Status */}
         <div className="col-span-1">
           <p className="text-sm mb-1" style={{ color: text }}>
             وضعیت
@@ -225,7 +259,7 @@ export default function AdminUsersDesktop() {
         </div>
       </div>
 
-      {/* جدول */}
+      {/* Table */}
       <div
         className="relative overflow-x-auto rounded-xl border"
         style={{ borderColor }}
@@ -244,8 +278,9 @@ export default function AdminUsersDesktop() {
                 color: headerText,
               }}
             >
+              <th className="p-3 border">تصویر</th>
               <th className="p-3 border">نام کامل</th>
-              <th className="p-3 border">نقش</th>
+              <th className="p-3 border">سمت</th>
               <th className="p-3 border">نام کاربری</th>
               <th className="p-3 border">ایمیل</th>
               <th className="p-3 border">وضعیت</th>
@@ -256,71 +291,150 @@ export default function AdminUsersDesktop() {
           <tbody>
             {users.length === 0 && !loadingUsers && (
               <tr>
-                <td colSpan={6} className="p-6 text-center opacity-70">
+                <td colSpan={7} className="p-6 text-center opacity-70">
                   هیچ کاربری با این فیلترها یافت نشد.
                 </td>
               </tr>
             )}
 
-            {users.map((user, index) => (
-              <tr
-                key={user.id}
-                className="text-center"
-                style={{
-                  backgroundColor:
-                    index % 2 === 0 ? "transparent" : tableStripe,
-                }}
-              >
-                <td className="p-3 border">{user.full_name}</td>
-                <td className="p-3 border">{user.role}</td>
-                <td className="p-3 border">{user.username}</td>
-                <td className="p-3 border">{user.email}</td>
+            {users.map((user, index) => {
+              const avatar = user.avatar_url
+                ? user.avatar_url.startsWith("/uploads")
+                  ? `${API_ROOT}${user.avatar_url}`
+                  : user.avatar_url
+                : "/no-avatar.png";
 
-                <td className="p-3 border">
-                  <span
-                    className="px-3 py-1 rounded-full text-xs font-bold"
-                    style={{
-                      backgroundColor: user.is_active
-                        ? (isDark ? palette.darkcolor16 : palette.lightcolor16)
-                        : (isDark ? palette.darkcolor6 : palette.lightcolor5),
-                      color: user.is_active
-                        ? palette.lightcolor1
-                        : (isDark ? palette.lightcolor1 : palette.darkcolor5),
-                    }}
-                  >
-                    {user.is_active ? "فعال" : "غیرفعال"}
-                  </span>
-                </td>
+              return (
+                <tr
+                  key={user.id}
+                  className="text-center"
+                  style={{
+                    backgroundColor:
+                      index % 2 === 0 ? "transparent" : tableStripe,
+                  }}
+                >
+                  <td className="p-3 border">
+                    <img
+                      src={avatar}
+                      alt="avatar"
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: "8px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </td>
 
-                <td className="p-3 border">
-                  <div className="flex justify-center gap-3">
-                    <Link href={`/dashboard/adminusers/${user.id}`}>
-                      <Button size="sm" color="primary" radius="lg">
-                        مشاهده
-                      </Button>
-                    </Link>
+                  <td className="p-3 border">
+                    {user.first_name} {user.last_name}
+                  </td>
 
-                    <Link href={`/dashboard/adminusers/${user.id}/edit`}>
-                      <Button size="sm" color="warning" radius="lg">
-                        ویرایش
-                      </Button>
-                    </Link>
+                  <td className="p-3 border">{user.position}</td>
+                  <td className="p-3 border">{user.username}</td>
+                  <td className="p-3 border">{user.email}</td>
 
-                    <Button
-                      size="sm"
-                      color="danger"
-                      radius="lg"
-                      onClick={() => handleDelete(user.id)}
+                  <td className="p-3 border">
+                    <span
+                      className="px-3 py-1 rounded-full text-xs font-bold"
+                      style={{
+                        backgroundColor: user.is_active
+                          ? (isDark ? palette.darkcolor16 : palette.lightcolor16)
+                          : (isDark ? palette.darkcolor6 : palette.lightcolor5),
+                        color: user.is_active
+                          ? palette.lightcolor1
+                          : (isDark ? palette.lightcolor1 : palette.darkcolor5),
+                      }}
                     >
-                      حذف
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {user.is_active ? "فعال" : "غیرفعال"}
+                    </span>
+                  </td>
+
+                  <td className="p-3 border">
+                    <div className="flex justify-center gap-3">
+                      <Link href={`/dashboard/adminusers/${user.id}`}>
+                        <Button size="sm" color="primary" radius="lg">
+                          مشاهده
+                        </Button>
+                      </Link>
+
+                      <Link href={`/dashboard/adminusers/${user.id}/edit`}>
+                        <Button size="sm" color="warning" radius="lg">
+                          ویرایش
+                        </Button>
+                      </Link>
+
+                      <Button
+                        size="sm"
+                        color="danger"
+                        radius="lg"
+                        onClick={() =>
+                          setDeleteDialog({
+                            open: true,
+                            userId: user.id,
+                            username: user.username,
+                          })
+                        }
+                      >
+                        حذف
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {/* 🔥 Delete Confirmation Dialog */}
+      <Modal
+        isOpen={deleteDialog.open}
+        onClose={() => setDeleteDialog({ open: false, userId: "", username: "" })}
+        backdrop="blur"
+      >
+        <ModalContent
+          style={{
+            backgroundColor: isDark ? palette.darkcolor12 : palette.lightcolor1,
+            color: text,
+          }}
+        >
+          <ModalHeader
+            className="text-lg font-bold"
+            style={{ color: text }}
+          >
+            حذف کاربر
+          </ModalHeader>
+
+          <ModalBody style={{ color: text }}>
+            <p className="leading-7 text-center">
+              کلیه اطلاعات کاربر
+              <strong className="mx-1 text-danger">{deleteDialog.username}</strong>
+              حذف می‌شود.  
+              آیا مطمئن هستید؟
+            </p>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              color="danger"
+              className="w-full"
+              onClick={handleDeleteUser}
+            >
+              بله، حذف شود
+            </Button>
+
+            <Button
+              className="w-full"
+              onClick={() =>
+                setDeleteDialog({ open: false, userId: "", username: "" })
+              }
+            >
+              انصراف
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

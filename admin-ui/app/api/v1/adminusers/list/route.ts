@@ -12,9 +12,9 @@ export async function GET() {
       );
     }
 
-    // 🔥 مسیر درست — چون BASE_URL خودش /api/v1 دارد
+    // مسیر درست FastAPI
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users/`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users`,
       {
         method: "GET",
         headers: {
@@ -33,10 +33,8 @@ export async function GET() {
 
     const data = await res.json();
 
-    return NextResponse.json(
-      { users: data.users ?? data.items ?? data },
-      { status: 200 }
-    );
+    return NextResponse.json(data, { status: 200 });
+
   } catch (err) {
     console.error("Admin Users API Error:", err);
     return NextResponse.json(

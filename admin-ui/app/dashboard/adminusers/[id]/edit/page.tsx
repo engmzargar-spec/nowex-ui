@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Input,
@@ -12,10 +12,28 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
 
-import { palette } from "../../../theme/palette";
-import { useThemeContext } from "../../../context/ThemeContext";
+import { palette } from "../../../../theme/palette";
+import { useThemeContext } from "../../../../context/ThemeContext";
 
-export default function CreateAdminUserPage() {
+type AdminUser = {
+  id: string;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  position: string;
+  employee_id?: string;
+  address?: string;
+  description?: string;
+  is_active: boolean;
+  two_factor_enabled: boolean;
+  avatar_url?: string;
+};
+
+export default function EditAdminUserPage({ params }: { params: { id: string } }) {
+  const { id } = params;
+
   const { desktopTheme } = useThemeContext();
   const isDark = desktopTheme === "dark";
 
@@ -26,32 +44,56 @@ export default function CreateAdminUserPage() {
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL!;
   const API_ROOT = API_BASE.replace("/api/v1", "");
 
-  // ------------------------------
-  // 🔥 فرم
-  // ------------------------------
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    first_name: "",
-    last_name: "",
-    phone: "",
-    position: "",
-    employee_id: "",
-    address: "",
-    description: "",
-    password: "",
-    is_active: true,
-    two_factor_enabled: false,
-    avatar_url: "", // Base64
-  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState<AdminUser | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [newAvatarBase64, setNewAvatarBase64] = useState<string | null>(null);
 
   // ------------------------------
-  // 📌 آپلود تصویر → تبدیل به Base64
+  // 📌 Load User Data
   // ------------------------------
-  function handleAvatarUpload(e: any) {
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const token = Cookies.get("nowex_admin_token");
+
+        const res = await fetch(`${API_BASE}/admin/users/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          toast.error("کاربر یافت نشد");
+          return;
+        }
+
+        const data: AdminUser = await res.json();
+        setForm(data);
+
+        if (data.avatar_url) {
+          const avatar = data.avatar_url.startsWith("/uploads")
+            ? `${API_ROOT}${data.avatar_url}`
+            : data.avatar_url;
+
+          setPreviewImage(avatar);
+        }
+      } catch {
+        toast.error("خطا در دریافت اطلاعات کاربر");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadUser();
+  }, [id]);
+
+  // ------------------------------
+  // 📌 آپلود تصویر جدید → Base64
+  // ------------------------------
+  function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -59,7 +101,7 @@ export default function CreateAdminUserPage() {
 
     reader.onloadend = () => {
       const base64 = reader.result as string;
-      setForm((prev) => ({ ...prev, avatar_url: base64 }));
+      setNewAvatarBase64(base64);
       setPreviewImage(base64);
     };
 
@@ -67,37 +109,71 @@ export default function CreateAdminUserPage() {
   }
 
   // ------------------------------
-  // 📌 ارسال فرم
+  // 📌 ذخیره تغییرات
   // ------------------------------
-  async function handleSubmit() {
-    setLoading(true);
+  async function handleSave() {
+    if (!form) return;
+
+    setSaving(true);
 
     try {
       const token = Cookies.get("nowex_admin_token");
 
-      const res = await fetch(`${API_BASE}/admin/users`, {
-        method: "POST",
+      const payload: any = {
+        username: form.username,
+        email: form.email,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        phone: form.phone,
+        position: form.position,
+        employee_id: form.employee_id,
+        address: form.address,
+        description: form.description,
+        is_active: form.is_active,
+        two_factor_enabled: form.two_factor_enabled,
+      };
+
+      if (newAvatarBase64) {
+        payload.avatar_url = newAvatarBase64;
+      }
+
+      const res = await fetch(`${API_BASE}/admin/users/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        // ممکن است پاسخ خالی باشد
+      }
+
       if (!res.ok) {
-        const err = await res.json();
-        toast.error(err.detail || "خطا در ایجاد کاربر");
-        setLoading(false);
+        toast.error(data?.detail || "خطا در ذخیره تغییرات");
+        setSaving(false);
         return;
       }
 
-      toast.success("کاربر با موفقیت ایجاد شد");
-      window.location.href = "/dashboard/adminusers";
-    } catch (err) {
-      toast.error("خطا در ایجاد کاربر");
+      toast.success("تغییرات با موفقیت ذخیره شد");
+      window.location.href = `/dashboard/adminusers/${id}`;
+    } catch {
+      toast.error("خطا در ذخیره تغییرات");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
+  }
+
+  if (loading || !form) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <Spinner color="warning" label="در حال بارگذاری اطلاعات..." />
+      </div>
+    );
   }
 
   return (
@@ -109,19 +185,19 @@ export default function CreateAdminUserPage() {
         border: `3px solid ${borderColor}`,
       }}
     >
-      <h1 className="text-xl font-bold">ایجاد کاربر جدید</h1>
+      <h1 className="text-xl font-bold">ویرایش اطلاعات کاربر</h1>
 
-      {/* Avatar Upload */}
+      {/* Avatar */}
       <div className="flex flex-col items-center gap-3">
         <img
           src={previewImage || "/no-avatar.png"}
           alt="avatar"
           style={{
-            width: 120,
-            height: 120,
+            width: 140,
+            height: 140,
             borderRadius: "12px",
             objectFit: "cover",
-            border: `2px solid ${borderColor}`,
+            border: `3px solid ${borderColor}`,
           }}
         />
 
@@ -133,7 +209,7 @@ export default function CreateAdminUserPage() {
         />
       </div>
 
-      {/* Form Fields */}
+      {/* Form */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="نام"
@@ -173,27 +249,20 @@ export default function CreateAdminUserPage() {
 
         <Input
           label="کد پرسنلی"
-          value={form.employee_id}
+          value={form.employee_id || ""}
           onChange={(e) => setForm({ ...form, employee_id: e.target.value })}
-        />
-
-        <Input
-          label="رمز عبور"
-          type="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
       </div>
 
       <Textarea
         label="آدرس"
-        value={form.address}
+        value={form.address || ""}
         onChange={(e) => setForm({ ...form, address: e.target.value })}
       />
 
       <Textarea
         label="توضیحات"
-        value={form.description}
+        value={form.description || ""}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
 
@@ -216,7 +285,7 @@ export default function CreateAdminUserPage() {
 
       {/* Buttons */}
       <div className="flex justify-between mt-6">
-        <Link href="/dashboard/adminusers">
+        <Link href={`/dashboard/adminusers/${id}`}>
           <Button color="default" radius="lg">
             بازگشت
           </Button>
@@ -225,10 +294,10 @@ export default function CreateAdminUserPage() {
         <Button
           color="primary"
           radius="lg"
-          onClick={handleSubmit}
-          disabled={loading}
+          onClick={handleSave}
+          disabled={saving}
         >
-          {loading ? <Spinner size="sm" color="white" /> : "ایجاد کاربر"}
+          {saving ? <Spinner size="sm" color="white" /> : "ذخیره تغییرات"}
         </Button>
       </div>
     </div>
